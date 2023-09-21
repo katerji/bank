@@ -2,9 +2,9 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/katerji/UserAuthKit/input"
-	"github.com/katerji/UserAuthKit/model"
-	"github.com/katerji/UserAuthKit/service"
+	"github.com/katerji/bank/input"
+	"github.com/katerji/bank/model"
+	"github.com/katerji/bank/service"
 )
 
 const LoginPath = "/login"

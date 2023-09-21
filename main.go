@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/katerji/UserAuthKit/db"
-	"github.com/katerji/UserAuthKit/handler"
-	"github.com/katerji/UserAuthKit/middleware"
+	"github.com/katerji/bank/db"
+	"github.com/katerji/bank/handler"
+	"github.com/katerji/bank/middleware"
 )
 
 func main() {

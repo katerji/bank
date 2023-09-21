@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/katerji/UserAuthKit/model"
+	"github.com/katerji/bank/model"
 )
 
 const UserInfoPath = "/user"

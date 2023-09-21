@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/katerji/UserAuthKit/envs"
+	"github.com/katerji/bank/envs"
 	"time"
 )
 

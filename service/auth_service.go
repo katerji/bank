@@ -2,11 +2,11 @@ package service
 
 import (
 	"errors"
-	"github.com/katerji/UserAuthKit/db"
-	"github.com/katerji/UserAuthKit/db/query"
-	"github.com/katerji/UserAuthKit/db/queryrow"
-	"github.com/katerji/UserAuthKit/input"
-	"github.com/katerji/UserAuthKit/model"
+	"github.com/katerji/bank/db"
+	"github.com/katerji/bank/db/query"
+	"github.com/katerji/bank/db/queryrow"
+	"github.com/katerji/bank/input"
+	"github.com/katerji/bank/model"
 	"golang.org/x/crypto/bcrypt"
 )
 

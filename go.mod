@@ -1,4 +1,4 @@
-module github.com/katerji/UserAuthKit
+module github.com/katerji/bank
 
 go 1.20
 
