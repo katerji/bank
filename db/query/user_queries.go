@@ -1,6 +1,6 @@
 package query
 
 const (
-	InsertUserQuery     = "INSERT INTO user (email, password) VALUES (?, ?)"
-	GetUserByEmailQuery = "SELECT id, email, password FROM user WHERE email = ?"
+	InsertCustomerQuery = "INSERT INTO customer (name, phone_number, email, password) VALUES (?, ?)"
+	GetCustomerByEmail  = "SELECT id, email, password, name, phone_number FROM customer WHERE email = ?"
 )

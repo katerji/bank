@@ -6,6 +6,7 @@ CREATE TABLE `customer`
     `id`           int          NOT NULL AUTO_INCREMENT,
     `name`         varchar(255) NOT NULL,
     `email`        varchar(255) NOT NULL,
+    `password`     varchar(255) NOT NULL,
     `phone_number` varchar(15) DEFAULT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `email` (`email`)

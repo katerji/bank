@@ -1,15 +1,18 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
+	"fmt"
 	"github.com/katerji/bank/db"
-	"github.com/katerji/bank/handler"
-	"github.com/katerji/bank/middleware"
+	"github.com/katerji/bank/proto"
+	"github.com/katerji/bank/service"
+	"google.golang.org/grpc"
+	"log"
+	"net"
 )
 
 func main() {
 	initDB()
-	initWebServer()
+	initGRPCServer()
 }
 
 func initDB() {
@@ -20,22 +23,17 @@ func initDB() {
 	}
 }
 
-func initWebServer() {
-	router := gin.Default()
-	api := router.Group("/api")
+func initGRPCServer() {
+	authService := service.AuthService{}
+	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", 88))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
 
-	api.GET(handler.LandingPath, handler.LandingController)
+	server := grpc.NewServer()
+	proto.RegisterAuthServiceServer(server, authService)
 
-	auth := api.Group("/auth")
-	auth.POST(handler.RegisterPath, handler.RegisterHandler)
-	auth.POST(handler.LoginPath, handler.LoginHandler)
-	auth.POST(handler.RefreshTokenPath, handler.RefreshTokenHandler)
-
-	api.Use(middleware.GetAuthMiddleware())
-
-	api.GET(handler.UserInfoPath, handler.UserInfoHandler)
-
-	err := router.Run(":85")
+	err = server.Serve(lis)
 	if err != nil {
 		panic(err)
 	}

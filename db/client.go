@@ -28,6 +28,7 @@ func getDbClient() (*Client, error) {
 	dbPass := envs.GetInstance().GetDbPassword()
 	dbName := envs.GetInstance().GetDbName()
 
+
 	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPass, dbHost, dbPort, dbName)
 
 	db, err := sql.Open("mysql", dataSourceName)
