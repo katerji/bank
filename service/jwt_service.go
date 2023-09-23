@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/katerji/bank/envs"
-	"github.com/katerji/bank/proto"
+	proto "github.com/katerji/bank/generated"
 	"github.com/katerji/bank/utils"
 	"os"
 	"strconv"

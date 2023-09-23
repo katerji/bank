@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/katerji/bank/db"
-	"github.com/katerji/bank/proto"
+	proto "github.com/katerji/bank/generated"
 	"github.com/katerji/bank/service"
 	"google.golang.org/grpc"
 	"log"

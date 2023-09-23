@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/katerji/bank/db"
 	"github.com/katerji/bank/db/query"
-	"github.com/katerji/bank/proto"
+	proto "github.com/katerji/bank/generated"
 	"golang.org/x/crypto/bcrypt"
 )
 

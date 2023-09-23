@@ -2,32 +2,6 @@ syntax = "proto3";
 
 option go_package = "github.com/katerji/proto";
 
-message LoginRequest {
-  string email = 1 [json_name = "email"];
-  string password = 2 [json_name = "password"];
-}
-
-message JwtPair {
-  string access_token = 1 [json_name = "access_token"];
-  string refresh_token = 2 [json_name = "refresh_token"];
-}
-
-message LoginResponse {
-  Customer customer = 1 [json_name = "customer"];
-  JwtPair jwtPair = 2 [json_name = "jwt_pair"];
-}
-
-message RegisterRequest {
-  string name = 1 [json_name = "name"];
-  string email = 2 [json_name = "email"];
-  string password = 3 [json_name = "password"];
-  string phone_number = 4 [json_name = "phone_number"];
-}
-
-service AuthService {
-  rpc Register(RegisterRequest) returns (Customer);
-  rpc Login(LoginRequest) returns (LoginResponse);
-}
 message Customer {
   int32 id = 1 [json_name = "id"];
   string name = 2 [json_name = "name"];
