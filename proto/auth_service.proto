@@ -17,7 +17,7 @@ message LoginRequest {
 
 message LoginResponse {
   Customer customer = 1 [json_name = "customer"];
-  JwtPair jwtPair = 2 [json_name = "jwt_pair"];
+  JwtPair jwt_pair = 2 [json_name = "jwt_pair"];
 }
 
 message RegisterRequest {
