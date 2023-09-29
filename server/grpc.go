@@ -10,11 +10,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func withServerUnaryInterceptor() grpc.ServerOption {
-	return grpc.UnaryInterceptor(serverInterceptor)
-}
 func NewGRPCServer() *grpc.Server {
-	s := grpc.NewServer(withServerUnaryInterceptor())
+	s := grpc.NewServer(grpc.UnaryInterceptor(getAuthMiddleware))
 
 	authService := service.AuthService{}
 	bankService := service.BankService{}
@@ -23,16 +20,8 @@ func NewGRPCServer() *grpc.Server {
 	return s
 }
 
-func serverInterceptor(ctx context.Context,
-	req interface{},
-	info *grpc.UnaryServerInfo,
-	handler grpc.UnaryHandler) (interface{}, error) {
-
-	protectedMethods := []string{
-		"/BankService/CreateAccount",
-	}
-	method := info.FullMethod
-	if utils.InSlice(protectedMethods, method) {
+func getAuthMiddleware(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
+	if !utils.InSlice(getUnProtectedMethods(), info.FullMethod) {
 		customer, err := authorize(ctx)
 		if err != nil {
 			return nil, err
@@ -64,4 +53,11 @@ func authorize(ctx context.Context) (*proto.Customer, error) {
 		return nil, errors.New("invalid token")
 	}
 	return customer, nil
+}
+
+func getUnProtectedMethods() []string {
+	return []string{
+		"/AuthService/Register",
+		"/AuthService/Login",
+	}
 }
