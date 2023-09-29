@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+import "models.proto";
+
+option go_package = "github.com/katerji/proto";
+
+message CreateAccountRequest {
+  string name = 1 [json_name = "name"];
+}
+
+message CreateAccountResponse {
+  Account account = 1 [json_name = "account"];
+}
+
+message WithdrawRequest {
+  int32 account_id = 1 [json_name = "account_id"];
+  float amount = 2 [json_name = "amount"];
+}
+
+message GenericResponse {
+  bool success = 1 [json_name = "success"];
+}
+
+message DepositRequest {
+  int32 account_id = 1 [json_name = "account_id"];
+  float amount = 2 [json_name = "amount"];
+}
+
+service BankService {
+  rpc CreateAccount(CreateAccountRequest) returns (CreateAccountResponse);
+  rpc Withdraw(WithdrawRequest) returns (GenericResponse);
+  rpc Deposit(DepositRequest) returns (GenericResponse);
+}

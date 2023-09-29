@@ -14,10 +14,12 @@ CREATE TABLE `customer`
 CREATE TABLE `account`
 (
     `id`          int            NOT NULL AUTO_INCREMENT,
+    `name`        varchar(255)   NOT NULL,
     `customer_id` int            NOT NULL,
     `balance`     decimal(10, 2) NOT NULL DEFAULT '0.00',
     `deleted`     int            NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
+    UNIQUE KEY `customer_id_2` (`customer_id`,`name`),
     KEY           `customer_id` (`customer_id`,`deleted`),
     CONSTRAINT `account_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

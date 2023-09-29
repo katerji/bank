@@ -41,7 +41,7 @@ func (jwtService JWTService) validateToken(token, jwtSecret string) (*proto.Cust
 		return nil, errors.New("error parsing token")
 	}
 	claims, ok := parsedToken.Claims.(jwt.MapClaims)
-	if !ok || parsedToken.Valid {
+	if !ok || !parsedToken.Valid {
 		return nil, errors.New("invalid token")
 	}
 	jsonClaims, err := json.Marshal(claims)
