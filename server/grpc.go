@@ -38,12 +38,12 @@ func getAuthMiddleware(ctx context.Context, req any, info *grpc.UnaryServerInfo,
 func authorize(ctx context.Context) (*proto.Customer, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		return nil, errors.New("retrieving metadata is failed")
+		return nil, errors.New("retrieving metadata has failed")
 	}
 
 	authHeader, ok := md["authorization"]
 	if !ok {
-		return nil, errors.New("authorization token is not supplied")
+		return nil, errors.New("authorization token missing")
 	}
 	token := authHeader[0][7:]
 
