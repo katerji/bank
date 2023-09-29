@@ -12,8 +12,9 @@ message Customer {
 
 message Account {
   int32 id = 1 [json_name = "id"];
-  int32 customer_id = 2 [json_name = "customer_id"];
-  double balance = 3 [json_name = "balance"];
+  string name = 2 [json_name = "name"];
+  int32 customer_id = 3 [json_name = "customer_id"];
+  double balance = 4 [json_name = "balance"];
 }
 
 enum TransactionType {
