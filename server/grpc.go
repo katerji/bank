@@ -17,6 +17,7 @@ func NewGRPCServer() *grpc.Server {
 	bankService := service.BankService{}
 	proto.RegisterAuthServiceServer(s, authService)
 	proto.RegisterBankServiceServer(s, bankService)
+
 	return s
 }
 
@@ -52,6 +53,7 @@ func authorize(ctx context.Context) (*proto.Customer, error) {
 	if err != nil {
 		return nil, errors.New("invalid token")
 	}
+
 	return customer, nil
 }
 
