@@ -41,7 +41,7 @@ func (service AuthService) Register(_ context.Context, request *proto.RegisterRe
 func (service AuthService) Login(_ context.Context, request *proto.LoginRequest) (*proto.LoginResponse, error) {
 	customer := &proto.Customer{}
 	client := db.GetDbInstance()
-	row := client.QueryRow(query.GetCustomerByEmail, request.GetEmail())
+	row := client.FetchOne(query.GetCustomerByEmail, request.GetEmail())
 	err := row.Scan(&customer.Id, &customer.Email, &customer.Password, &customer.Name, &customer.PhoneNumber)
 	if err != nil {
 		fmt.Println(err)
