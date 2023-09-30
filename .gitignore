@@ -1,3 +1,4 @@
 .idea/
 .env
 *.pb.go
+proto/dummy.proto
