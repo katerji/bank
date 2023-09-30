@@ -43,8 +43,11 @@ func (b BankService) Deposit(ctx context.Context, request *proto.DepositRequest)
 	if amount <= 0 || accountID == 0 {
 		return nil, errors.New("bad request")
 	}
-	accountOwnerID := getAccountOwner(accountID)
-	if accountOwnerID != int(customer.Id) {
+	account, err := getAccount(accountID)
+	if err != nil {
+		return nil, err
+	}
+	if account.CustomerId != customer.Id {
 		return nil, errors.New("unauthorized transaction")
 	}
 	ok := db.GetDbInstance().Exec(query.DepositQuery, amount)
@@ -54,11 +57,35 @@ func (b BankService) Deposit(ctx context.Context, request *proto.DepositRequest)
 	}, nil
 }
 
-func getAccountOwner(accountID int) int {
-	row := db.GetDbInstance().FetchOne(query.FetchAccountOwnerQuery, accountID)
-	var ownerID int
-	if err := row.Scan(&ownerID); err != nil {
-		return 0
+func (b BankService) Withdraw(ctx context.Context, request *proto.WithdrawRequest) (*proto.GenericResponse, error) {
+	customer := ctx.Value(utils.Customer).(*proto.Customer)
+	amount := request.GetAmount()
+	accountID := int(request.GetAccountId())
+	if amount <= 0 || accountID == 0 {
+		return nil, errors.New("bad request")
 	}
-	return ownerID
+	account, err := getAccount(accountID)
+	if err != nil {
+		return nil, err
+	}
+	if account.Id != customer.Id {
+		return nil, errors.New("unauthorized transaction")
+	}
+	if float32(account.Balance) < amount {
+		return nil, errors.New("insufficient funds")
+	}
+	ok := db.GetDbInstance().Exec(query.WithdrawQuery, amount)
+
+	return &proto.GenericResponse{
+		Success: ok,
+	}, nil
+}
+
+func getAccount(accountID int) (*proto.Account, error) {
+	account := &proto.Account{}
+	row := db.GetDbInstance().FetchOne(query.FetchAccountQuery)
+	if err := row.Scan(&account.Id, &account.Name, &account.Balance, &account.CustomerId); err != nil {
+		return nil, fmt.Errorf("account id %d not found", accountID)
+	}
+	return account, nil
 }
