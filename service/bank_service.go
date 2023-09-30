@@ -4,11 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/katerji/bank/cache"
 	"github.com/katerji/bank/db"
 	"github.com/katerji/bank/db/query"
 	proto "github.com/katerji/bank/generated"
 	"github.com/katerji/bank/utils"
+	"github.com/redis/go-redis/v9"
 )
+
+const accountLockKey = "account_lock_"
 
 type BankService struct {
 	proto.UnimplementedBankServiceServer
@@ -38,17 +42,25 @@ func (b BankService) CreateAccount(ctx context.Context, request *proto.CreateAcc
 
 func (b BankService) CloseAccount(ctx context.Context, request *proto.CloseAccountRequest) (*proto.GenericResponse, error) {
 	customer := ctx.Value(utils.Customer).(*proto.Customer)
-	account, err := getAccount(int(request.GetAccountId()))
+	accountID := int(request.GetAccountId())
+	account, err := getAccount(accountID)
 	if err != nil {
 		return nil, fmt.Errorf("account %d not found", account.Id)
 	}
 	if customer.Id != account.Id {
 		return nil, errors.New("unauthorized request")
 	}
+	if locked, err := isAccountLocked(accountID); locked || err != nil {
+		fmt.Println(err)
+		fmt.Println(locked)
+		return nil, errors.New("another transaction in progress")
+	}
+	lockAccount(accountID)
+	defer unlockAccount(accountID)
 	if account.Balance != 0 {
 		return nil, errors.New("unable to close, withdraw balance before")
 	}
-	success := db.GetDbInstance().Exec(query.CloseAccountQuery, account.GetId())
+	success := db.GetDbInstance().Exec(query.CloseAccountQuery, accountID)
 
 	return &proto.GenericResponse{
 		Success: success,
@@ -69,6 +81,12 @@ func (b BankService) Deposit(ctx context.Context, request *proto.DepositRequest)
 	if account.CustomerId != customer.Id {
 		return nil, errors.New("unauthorized transaction")
 	}
+	if locked, err := isAccountLocked(accountID); locked || err != nil {
+		fmt.Println(err)
+		return nil, errors.New("another transaction in progress")
+	}
+	lockAccount(accountID)
+	defer unlockAccount(accountID)
 	ok := db.GetDbInstance().Exec(query.DepositQuery, amount, accountID)
 
 	return &proto.GenericResponse{
@@ -90,6 +108,11 @@ func (b BankService) Withdraw(ctx context.Context, request *proto.WithdrawReques
 	if account.Id != customer.Id {
 		return nil, errors.New("unauthorized transaction")
 	}
+	if locked, err := isAccountLocked(accountID); locked || err != nil {
+		return nil, errors.New("another transaction in progress")
+	}
+	lockAccount(accountID)
+	defer unlockAccount(accountID)
 	if float32(account.Balance) < amount {
 		return nil, errors.New("insufficient funds")
 	}
@@ -107,4 +130,27 @@ func getAccount(accountID int) (*proto.Account, error) {
 		return nil, fmt.Errorf("account id %d not found", accountID)
 	}
 	return account, nil
+}
+
+func isAccountLocked(accountID int) (bool, error) {
+	key := getAccountLockRedisKey(accountID)
+	locked, err := cache.GetRedisInstance().GetBool(key)
+	if err == redis.Nil {
+		return false, nil
+	}
+	return locked, err
+}
+
+func lockAccount(accountID int) {
+	key := getAccountLockRedisKey(accountID)
+	cache.GetRedisInstance().SetWithDefaultExpiry(key, true)
+}
+
+func unlockAccount(accountID int) {
+	key := getAccountLockRedisKey(accountID)
+	cache.GetRedisInstance().Delete(key)
+}
+
+func getAccountLockRedisKey(accountID int) string {
+	return fmt.Sprintf("%s%d", accountLockKey, accountID)
 }
