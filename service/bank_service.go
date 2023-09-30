@@ -35,3 +35,30 @@ func (b BankService) CreateAccount(ctx context.Context, request *proto.CreateAcc
 		},
 	}, nil
 }
+
+func (b BankService) Deposit(ctx context.Context, request *proto.DepositRequest) (*proto.GenericResponse, error) {
+	customer := ctx.Value(utils.Customer).(*proto.Customer)
+	amount := request.GetAmount()
+	accountID := int(request.GetAccountId())
+	if amount <= 0 || accountID == 0 {
+		return nil, errors.New("bad request")
+	}
+	accountOwnerID := getAccountOwner(accountID)
+	if accountOwnerID != int(customer.Id) {
+		return nil, errors.New("unauthorized transaction")
+	}
+	ok := db.GetDbInstance().Exec(query.DepositQuery, amount)
+
+	return &proto.GenericResponse{
+		Success: ok,
+	}, nil
+}
+
+func getAccountOwner(accountID int) int {
+	row := db.GetDbInstance().FetchOne(query.FetchAccountOwnerQuery, accountID)
+	var ownerID int
+	if err := row.Scan(&ownerID); err != nil {
+		return 0
+	}
+	return ownerID
+}
