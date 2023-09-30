@@ -34,4 +34,5 @@ CREATE TABLE `transaction`
     KEY                `account_id` (`account_id`),
     CONSTRAINT `transaction_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
+INSERT INTO app.customer (id, name, email, password, phone_number) VALUES (1, 'abed', 'a@a.com', '$2a$14$lvys9kqtcJwJ9qLcJAUGTuefOTolgHjjtBFlHJyL7TWJ.tQcfRetC', '+9710585210561');
+INSERT INTO app.account (id, name, customer_id, balance, deleted) VALUES (1, 'personal', 1, 5.00, 0);
