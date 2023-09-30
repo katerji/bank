@@ -50,7 +50,7 @@ func (b BankService) Deposit(ctx context.Context, request *proto.DepositRequest)
 	if account.CustomerId != customer.Id {
 		return nil, errors.New("unauthorized transaction")
 	}
-	ok := db.GetDbInstance().Exec(query.DepositQuery, amount)
+	ok := db.GetDbInstance().Exec(query.DepositQuery, amount, accountID)
 
 	return &proto.GenericResponse{
 		Success: ok,
@@ -74,7 +74,7 @@ func (b BankService) Withdraw(ctx context.Context, request *proto.WithdrawReques
 	if float32(account.Balance) < amount {
 		return nil, errors.New("insufficient funds")
 	}
-	ok := db.GetDbInstance().Exec(query.WithdrawQuery, amount)
+	ok := db.GetDbInstance().Exec(query.WithdrawQuery, amount, accountID)
 
 	return &proto.GenericResponse{
 		Success: ok,
@@ -83,7 +83,7 @@ func (b BankService) Withdraw(ctx context.Context, request *proto.WithdrawReques
 
 func getAccount(accountID int) (*proto.Account, error) {
 	account := &proto.Account{}
-	row := db.GetDbInstance().FetchOne(query.FetchAccountQuery)
+	row := db.GetDbInstance().FetchOne(query.FetchAccountQuery, accountID)
 	if err := row.Scan(&account.Id, &account.Name, &account.Balance, &account.CustomerId); err != nil {
 		return nil, fmt.Errorf("account id %d not found", accountID)
 	}
