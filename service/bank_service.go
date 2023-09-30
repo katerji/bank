@@ -51,8 +51,6 @@ func (b BankService) CloseAccount(ctx context.Context, request *proto.CloseAccou
 		return nil, errors.New("unauthorized request")
 	}
 	if locked, err := isAccountLocked(accountID); locked || err != nil {
-		fmt.Println(err)
-		fmt.Println(locked)
 		return nil, errors.New("another transaction in progress")
 	}
 	lockAccount(accountID)
@@ -82,7 +80,6 @@ func (b BankService) Deposit(ctx context.Context, request *proto.DepositRequest)
 		return nil, errors.New("unauthorized transaction")
 	}
 	if locked, err := isAccountLocked(accountID); locked || err != nil {
-		fmt.Println(err)
 		return nil, errors.New("another transaction in progress")
 	}
 	lockAccount(accountID)

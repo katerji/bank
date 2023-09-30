@@ -44,7 +44,6 @@ func (service AuthService) Login(_ context.Context, request *proto.LoginRequest)
 	row := client.FetchOne(query.GetCustomerByEmail, request.GetEmail())
 	err := row.Scan(&customer.Id, &customer.Email, &customer.Password, &customer.Name, &customer.PhoneNumber)
 	if err != nil {
-		fmt.Println(err)
 		return nil, errors.New("email does not exist")
 	}
 
