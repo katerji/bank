@@ -21,7 +21,7 @@ func (b BankService) CreateAccount(ctx context.Context, request *proto.CreateAcc
 		return nil, errors.New("bad request")
 	}
 
-	accountID, err := db.GetDbInstance().Insert(query.InsertAccountQuery, name, customer.GetId())
+	accountID, err := db.GetDbInstance().Insert(query.CreateAccountQuery, name, customer.GetId())
 	if err != nil {
 		return nil, fmt.Errorf("account with name %s already exists", request.GetName())
 	}
@@ -33,6 +33,25 @@ func (b BankService) CreateAccount(ctx context.Context, request *proto.CreateAcc
 			CustomerId: customer.Id,
 			Balance:    0,
 		},
+	}, nil
+}
+
+func (b BankService) CloseAccount(ctx context.Context, request *proto.CloseAccountRequest) (*proto.GenericResponse, error) {
+	customer := ctx.Value(utils.Customer).(*proto.Customer)
+	account, err := getAccount(int(request.GetAccountId()))
+	if err != nil {
+		return nil, fmt.Errorf("account %d not found", account.Id)
+	}
+	if customer.Id != account.Id {
+		return nil, errors.New("unauthorized request")
+	}
+	if account.Balance != 0 {
+		return nil, errors.New("unable to close, withdraw balance before")
+	}
+	success := db.GetDbInstance().Exec(query.CloseAccountQuery, account.GetId())
+
+	return &proto.GenericResponse{
+		Success: success,
 	}, nil
 }
 
