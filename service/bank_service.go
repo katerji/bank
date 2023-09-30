@@ -40,6 +40,21 @@ func (b BankService) CreateAccount(ctx context.Context, request *proto.CreateAcc
 	}, nil
 }
 
+func (b BankService) GetAccount(ctx context.Context, request *proto.GetAccountRequest) (*proto.GetAccountResponse, error) {
+	customer := ctx.Value(utils.Customer).(*proto.Customer)
+	accountID := int(request.GetAccountId())
+	account, err := getAccount(accountID)
+	if err != nil {
+		return nil, fmt.Errorf("account %d not found", account.Id)
+	}
+	if customer.Id != account.Id {
+		return nil, errors.New("unauthorized request")
+	}
+	return &proto.GetAccountResponse{
+		Account: account,
+	}, nil
+}
+
 func (b BankService) CloseAccount(ctx context.Context, request *proto.CloseAccountRequest) (*proto.GenericResponse, error) {
 	customer := ctx.Value(utils.Customer).(*proto.Customer)
 	accountID := int(request.GetAccountId())

@@ -12,6 +12,14 @@ message CreateAccountResponse {
   Account account = 1 [json_name = "account"];
 }
 
+message GetAccountRequest {
+  int32 account_id = 1 [json_name = "account_id"];
+}
+
+message GetAccountResponse {
+  Account account = 1 [json_name = "account"];
+}
+
 message CloseAccountRequest {
   int32 account_id = 1 [json_name = "account_id"];
 }
@@ -32,6 +40,7 @@ message DepositRequest {
 
 service BankService {
   rpc CreateAccount(CreateAccountRequest) returns (CreateAccountResponse);
+  rpc GetAccount(GetAccountRequest) returns (GetAccountResponse);
   rpc CloseAccount(CloseAccountRequest) returns (GenericResponse);
   rpc Withdraw(WithdrawRequest) returns (GenericResponse);
   rpc Deposit(DepositRequest) returns (GenericResponse);
