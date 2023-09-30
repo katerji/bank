@@ -43,8 +43,8 @@ func getDbClient() (*Client, error) {
 	}, nil
 }
 
-func (client *Client) Fetch(query string, args ...any) []any {
-	rows, err := client.db.Query(query, args...)
+func (c *Client) Fetch(query string, args ...any) []any {
+	rows, err := c.db.Query(query, args...)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -64,12 +64,12 @@ func (client *Client) Fetch(query string, args ...any) []any {
 	return results
 }
 
-func (client *Client) FetchOne(query string, args ...any) *sql.Row {
-	return client.db.QueryRow(query, args...)
+func (c *Client) FetchOne(query string, args ...any) *sql.Row {
+	return c.db.QueryRow(query, args...)
 }
 
-func (client *Client) Insert(query string, args ...any) (int, error) {
-	rows, err := client.db.Prepare(query)
+func (c *Client) Insert(query string, args ...any) (int, error) {
+	rows, err := c.db.Prepare(query)
 	if err != nil {
 		fmt.Println(err.Error())
 		return 0, err
@@ -87,8 +87,8 @@ func (client *Client) Insert(query string, args ...any) (int, error) {
 	return int(insertId), nil
 }
 
-func (client *Client) Exec(query string, args ...any) bool {
-	rows, err := client.db.Prepare(query)
+func (c *Client) Exec(query string, args ...any) bool {
+	rows, err := c.db.Prepare(query)
 	if err != nil {
 		fmt.Println(err.Error())
 		return false
@@ -99,4 +99,8 @@ func (client *Client) Exec(query string, args ...any) bool {
 		return false
 	}
 	return true
+}
+
+func (c *Client) Ping() error {
+	return c.db.Ping()
 }
