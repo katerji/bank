@@ -9,7 +9,7 @@ import (
 )
 
 type Client struct {
-	*sql.DB
+	db *sql.DB
 }
 
 var instance *Client
@@ -28,7 +28,6 @@ func getDbClient() (*Client, error) {
 	dbPass := envs.GetInstance().GetDbPassword()
 	dbName := envs.GetInstance().GetDbName()
 
-
 	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPass, dbHost, dbPort, dbName)
 
 	db, err := sql.Open("mysql", dataSourceName)
@@ -45,7 +44,7 @@ func getDbClient() (*Client, error) {
 }
 
 func (client *Client) Fetch(query string, args ...any) []any {
-	rows, err := client.Query(query, args...)
+	rows, err := client.db.Query(query, args...)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -65,8 +64,12 @@ func (client *Client) Fetch(query string, args ...any) []any {
 	return results
 }
 
+func (client *Client) FetchOne(query string, args ...any) *sql.Row {
+	return client.db.QueryRow(query, args...)
+}
+
 func (client *Client) Insert(query string, args ...any) (int, error) {
-	rows, err := client.Prepare(query)
+	rows, err := client.db.Prepare(query)
 	if err != nil {
 		fmt.Println(err.Error())
 		return 0, err
@@ -85,7 +88,7 @@ func (client *Client) Insert(query string, args ...any) (int, error) {
 }
 
 func (client *Client) Exec(query string, args ...any) bool {
-	rows, err := client.Prepare(query)
+	rows, err := client.db.Prepare(query)
 	if err != nil {
 		fmt.Println(err.Error())
 		return false
